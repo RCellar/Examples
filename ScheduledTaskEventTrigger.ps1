@@ -33,10 +33,6 @@ $Subscription = @"
     $TriggerClass = Get-CimClass -ClassName MSFT_TaskEventTrigger -Namespace Root/Microsoft/Windows/TaskScheduler:MSFT_TaskEventTrigger
     $Trigger = New-CimInstance -CimClass $TriggerClass -ClientOnly -Property @{Subscription=$Subscription;Enabled=$true}
 
-    ### Encoded script action, modifications may need to be made to consider user space or system
-    ### based on desired outcome (eg. user visibility or not)
-    $Action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy Bypass -EncodedCommand `"$($ActionScript)`""
-
     ### Discuss with your friendly local Cyber crew first about switches like -Hidden.  Still recommended to minimize 
     ### user confusion or interference
     $Settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -Hidden
