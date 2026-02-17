@@ -1,8 +1,11 @@
 ### General Configuration
 $TaskName = "USB_Block_Alert"
 $TaskPath = "\AdminControls\"
+$LogName = "Microsoft-Windows-DeviceSetupManager/Admin" #Chosen for example, there may be other logs that have better detail data
+$EventSource = "Microsoft-Windows-DeviceSetupManager"
+$EventID = 20003 # The specific ID to trigger on
 
-###Fail out if unable to source content
+###Fail out if unable to source script content
 try {$ActionScript = Get-Content "PathToMonitoringScript" -Encoding UTF8 -ErrorAction Stop} #For consistency and compatibility
 catch {$_;return}
 
@@ -13,12 +16,7 @@ $Action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-Executio
 ###Validation logic, checks content of argument for match or existence of task, allows for dynamic task adjustment
 $Validation = [Bool]($Action.Arguments -eq ((Get-ScheduledTask -TaskName $TaskName -TaskPath $TaskPath -ErrorAction SilentlyContinue).Actions).Arguments)
 
-if (-not $Validation) {
-
-    $LogName = "Microsoft-Windows-DeviceSetupManager/Admin" #Chosen for example, there may be other logs that have better detail data
-    $EventSource = "Microsoft-Windows-DeviceSetupManager"
-    $EventID = 20003 # The specific ID to trigger on
-
+if ($Validation -ne $true) {
 ### Xpath query for Scheduled Task.  One of the only use cases where you ever really have to use Xpath.
 ### Herestring requires left alignment
 $Subscription = @"
